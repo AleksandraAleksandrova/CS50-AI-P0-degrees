@@ -85,15 +85,37 @@ def main():
 
 
 def shortest_path(source, target):
-    """
-    Returns the shortest list of (movie_id, person_id) pairs
-    that connect the source to the target.
+    # Maze.py's maze.solve() from src was used as a reference for algorithm
+    num_explored = 0
 
-    If no possible path, returns None.
-    """
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier() #BFS algorithm
+    frontier.add(start)
 
-    # TODO
-    raise NotImplementedError
+    explored = set()
+    
+    while True:
+        if frontier.empty():
+            return None
+
+        node = frontier.remove()
+        num_explored += 1
+
+        explored.add(node.state)
+        neighbors = neighbors_for_person(node.state)
+        for movie, actor in neighbors:
+            if actor not in explored and  not frontier.contains_state(actor):
+                child = Node(state=actor, parent=node, action=movie)
+                if child.state == target:
+                    path = []
+                    node = child
+                    while node.parent is not None:
+                        path.append((node.action, node.state))
+                        node = node.parent
+
+                    path.reverse()
+                    return path
+                frontier.add(child)
 
 
 def person_id_for_name(name):
